@@ -22,13 +22,17 @@ derv1 = (term1 -8*term2 + 8*term3 - term4)/(12*h)
 # 2nd Derivative
 derv2 = (-term1 + 16*term2 - 30*funct + 16*term3 - term4)/(12*h**2)
 
-# Newton-Raphson
+# Newton-Raphson on the 1st Derivative
 i = 0
 apprx_error = 1
-x0 = guess - (funct.subs(vrbl, guess)/derv1.subs(vrbl, guess))
+x0 = guess - (derv1.subs(vrbl, guess)/derv2.subs(vrbl, guess))
 
-while i <= max_iter or apprx_error != tol:
+while i <= max_iter and apprx_error >= tol:
     i += 1
-    xnew = x0 - (funct.subs(vrbl, x0)/derv1.subs(vrbl, x0))
+    xnew = x0 - (derv1.subs(vrbl, x0)/derv2.subs(vrbl, x0))
     fxnew = derv1.subs(vrbl, xnew)
+    apprx_error = abs((xnew-x0)/xnew)
     x0 = xnew
+    print(xnew)
+    print(apprx_error)
+
