@@ -1,11 +1,10 @@
 import sympy as sm
-from sympy.abc import x
 import tabulate
 
 # Parameters used
-h = 0.001
-max_iter = 200
-tol = 1e-20 
+STEP = 0.001
+MAX_ITER = 200
+TOL = 1e-20
 
 # Inputs
 funct = sm.sympify(input("Enter the function: "))
@@ -13,14 +12,14 @@ vrbl = sm.symbols(input("Enter the variable used: "))
 guess = float(input("Initial Guess: "))
 
 # 1st Derivative
-term1 = funct.subs(vrbl, vrbl-2*h)
-term2 = funct.subs(vrbl, vrbl-h)
-term3 = funct.subs(vrbl, vrbl+h)
-term4 = funct.subs(vrbl, vrbl+2*h)
-derv1 = (term1 -8*term2 + 8*term3 - term4)/(12*h)
+term1 = funct.subs(vrbl, vrbl-2*STEP)
+term2 = funct.subs(vrbl, vrbl-STEP)
+term3 = funct.subs(vrbl, vrbl+STEP)
+term4 = funct.subs(vrbl, vrbl+2*STEP)
+derv1 = (term1 -8*term2 + 8*term3 - term4)/(12*STEP)
 
 # 2nd Derivative
-derv2 = (-term1 + 16*term2 - 30*funct + 16*term3 - term4)/(12*h**2)
+derv2 = (-term1 + 16*term2 - 30*funct + 16*term3 - term4)/(12*STEP**2)
 
 # Newton-Raphson on the 1st Derivative
 i = 0
@@ -28,7 +27,7 @@ data = []
 params = {"xprev": guess, "fxprev": 1, "xnew":1, "fxnew":1, "apprx_error":1}
 params["xprev"] = guess - (derv1.subs(vrbl, guess)/derv2.subs(vrbl, guess))
 
-while i <= max_iter and params["apprx_error"] > tol:
+while i <= MAX_ITER and params["apprx_error"] > TOL:
     i += 1
     params["xnew"] = params["xprev"] - (derv1.subs(vrbl, params["xprev"])/derv2.subs(vrbl, params["xprev"]))
     params["fxnew"] = derv1.subs(vrbl,  params["xnew"])
@@ -43,10 +42,12 @@ while i <= max_iter and params["apprx_error"] > tol:
 
 # Tests for Maxima or Minima
 if derv2.subs(vrbl, params["xnew"]) > 0:
-    max_min = "Minima"
+    MAX_MIN = "Minima"
 elif derv2.subs(vrbl, params["xnew"]) < 0:
-    max_min = "Maxima"
+    MAX_MIN = "Maxima"
+else:
+    MAX_MIN = "Indeterminate"
 
 # print the data in tabular form and final answer in 15 decimal digit precision
 print("\n" + tabulate.tabulate(data, params.keys(), "double_outline", showindex=True,  colalign = ("center", "center", "center" , "center", "center", "center")) + "\n")
-print(tabulate.tabulate([[params["xnew"], params["apprx_error"], max_min ]], ["Critical Value (x)", "Approximation Error", "Maxima/Minima"], "fancy_grid",floatfmt=[".15f"], colalign = ("center", "center", "center")), "\n")
+print(tabulate.tabulate([[params["xnew"], params["apprx_error"], MAX_MIN ]], ["Critical Value (x)", "Approximation Error", "Maxima/Minima"], "fancy_grid",floatfmt=[".15f"], colalign = ("center", "center", "center")), "\n")
